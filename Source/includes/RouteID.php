@@ -44,8 +44,8 @@ class RouteID implements IRoute
 				case "POST":
 					( new ActionPost() )->execute( $tAPI, $this );
 					break;
-				case "PUT":
-					( new ActionPut() )->execute( $tAPI, $this );
+				case "PATCH":
+					( new ActionPatch() )->execute( $tAPI, $this );
 					break;
 				case "DELETE":
 					( new ActionDelete() )->execute( $tAPI, $this );
@@ -65,8 +65,8 @@ class RouteID implements IRoute
 				case "DELETE":
 					( new ActionDelete( $tURI[0] ) )->execute( $tAPI, $this );
 					break;
-				case "PUT":
-					( new ActionPut( $tURI[0] ) )->execute( $tAPI, $this );
+				case "PATCH":
+					( new ActionPatch( $tURI[0] ) )->execute( $tAPI, $this );
 					break;
 				default:
 					$tAPI->getOutput()->error( 405, "unsupported request type" );

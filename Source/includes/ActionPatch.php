@@ -5,7 +5,7 @@ namespace ExampleAPI;
 /**
 * Handles basic SQL Update by either ID or input
 */
-class ActionPut implements IAction
+class ActionPatch implements IAction
 {
 	/**
 	* @var string Optional ID for updating a single item

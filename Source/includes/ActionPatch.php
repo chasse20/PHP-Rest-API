@@ -63,17 +63,14 @@ class ActionPatch implements IAction
 				// Single
 				else
 				{
-					$tempIsID = $this->id != null;
-					$tempIsDataID = isset( $tempData->{ $tRoute->IDColumn } );
-					if ( $tempIsID || $tempIsDataID )
+					if ( isset( $tempData->{ $tRoute->IDColumn } ) )
 					{
-						$tempID = $tempIsID ? $this->id : $tempData->{ $tRoute->IDColumn };
-						if ( $tempIsDataID )
-						{
-							unset( $tempData->{ $tRoute->IDColumn } );
-						}
-						
-						if ( !$tempConnection->query( "UPDATE " . $tRoute->table . " " . Utility::SQLSet( $tempConnection, $tempData ) . " WHERE " . $tRoute->IDColumn . "=" . $tempID ) )
+						$this->id = $tempData->{ $tRoute->IDColumn };
+					}
+					
+					if ( $this->id != null )
+					{
+						if ( !$tempConnection->query( "UPDATE " . $tRoute->table . " " . Utility::SQLSet( $tempConnection, $tempData ) . " WHERE " . $tRoute->IDColumn . "=" . $this->id ) )
 						{
 							$tAPI->getOutput()->error( 500, $tempConnection->error );
 						}

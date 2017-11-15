@@ -66,6 +66,7 @@ class ActionPatch implements IAction
 					if ( isset( $tempData->{ $tRoute->IDColumn } ) )
 					{
 						$this->id = $tempData->{ $tRoute->IDColumn };
+						unset( $tempData->{ $tRoute->IDColumn } );
 					}
 					
 					if ( $this->id != null )

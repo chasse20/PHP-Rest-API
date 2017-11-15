@@ -63,7 +63,7 @@ class ActionPatch implements IAction
 				// Single
 				else
 				{
-					if ( isset( $tempData->{ $tRoute->IDColumn } ) )
+					if ( isset( $tempData->{ $tRoute->IDColumn } ) ) // prioritizes input data
 					{
 						$this->id = $tempData->{ $tRoute->IDColumn };
 						unset( $tempData->{ $tRoute->IDColumn } );

@@ -69,20 +69,17 @@ class ActionPatch implements IAction
 						unset( $tempData->{ $tRoute->IDColumn } );
 					}
 					
-					if ( $this->id != null )
-					{
-						if ( !$tempConnection->query( "UPDATE " . $tRoute->table . " " . Utility::SQLSet( $tempConnection, $tempData ) . " WHERE " . $tRoute->IDColumn . "=" . $this->id ) )
-						{
-							$tAPI->getOutput()->error( 500, $tempConnection->error );
-						}
-						else if ( $tempConnection->affected_rows == 0 )
-						{
-							$tAPI->getOutput()->error( 204, "no record found" );
-						}
-					}
-					else
+					if ( $this->id == null )
 					{
 						$tAPI->getOutput()->error( 500, "missing 'id' input" );
+					}
+					else if ( !$tempConnection->query( "UPDATE " . $tRoute->table . " " . Utility::SQLSet( $tempConnection, $tempData ) . " WHERE " . $tRoute->IDColumn . "=" . $this->id ) )
+					{
+						$tAPI->getOutput()->error( 500, $tempConnection->error );
+					}
+					else if ( $tempConnection->affected_rows == 0 )
+					{
+						$tAPI->getOutput()->error( 204, "no record found" );
 					}
 				}
 				

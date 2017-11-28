@@ -1,0 +1,1037 @@
+{
+	"openapi": "3.0.0",
+	"info":
+	{
+		"title": "Example PHP API",
+		"description": "OpenAPI documentation for managing the Example PHP database. (C)2017 Chris Hassebrook.",
+		"version": "1.0.0"
+	},
+	"servers":
+	[
+		{
+			"url": "http://www.chassebrook.com/ExampleAPI/index.php"
+		}
+	],
+	"paths":
+	{
+		"/inventory":
+		{
+			"get":
+			{
+				"summary": "Lists all inventories",
+				"tags":
+				[
+					"Inventory"
+				],
+				"parameters":
+				[
+					{
+						"$ref": "#/components/parameters/Limit"
+					},
+					{
+						"$ref": "#/components/parameters/Offset"
+					}
+				],
+				"responses":
+				{
+					"200":
+					{
+						"description": "List of inventory objects",
+						"content":
+						{
+							"application/json":
+							{
+								"schema":
+								{
+									"$ref": "#/components/schemas/InventoryList"
+								}
+							}
+						}
+					},
+					"404":
+					{
+						"$ref": "#/components/responses/404"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405NoID"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				}
+			},
+			"post":
+			{
+				"summary": "Add new inventory",
+				"tags":
+				[
+					"Inventory"
+				],
+				"responses":
+				{
+					"200":
+					{
+						"$ref": "#/components/responses/200Post"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405NoID"
+					},
+					"415":
+					{
+						"$ref": "#/components/responses/415"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				},
+				"requestBody":
+				{
+					"$ref": "#/components/requestBodies/Inventory"
+				}
+			}
+		},
+		"/inventory/{ID}":
+		{
+			"get":
+			{
+				"summary": "Get inventory by ID",
+				"tags":
+				[
+					"Inventory"
+				],
+				"parameters":
+				[
+					{
+						"$ref": "#/components/parameters/ID"
+					}
+				],
+				"responses":
+				{
+					"200":
+					{
+						"description": "Inventory object",
+						"content":
+						{
+							"application/json":
+							{
+								"schema":
+								{
+									"$ref": "#/components/schemas/Inventory"
+								}
+							}
+						}
+					},
+					"404":
+					{
+						"$ref": "#/components/responses/404"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405ID"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				}
+			},
+			"delete":
+			{
+				"summary": "Delete inventory by ID",
+				"tags":
+				[
+					"Inventory"
+				],
+				"parameters":
+				[
+					{
+						"$ref": "#/components/parameters/ID"
+					}
+				],
+				"responses":
+				{
+					"204":
+					{
+						"$ref": "#/components/responses/204"
+					},
+					"404":
+					{
+						"$ref": "#/components/responses/404"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405ID"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				}
+			},
+			"patch":
+			{
+				"summary": "Modify inventory of ID",
+				"tags":
+				[
+					"Inventory"
+				],
+				"parameters":
+				[
+					{
+						"$ref": "#/components/parameters/ID"
+					}
+				],
+				"responses":
+				{
+					"204":
+					{
+						"$ref": "#/components/responses/204"
+					},
+					"400":
+					{
+						"$ref": "#/components/responses/400"
+					},
+					"404":
+					{
+						"$ref": "#/components/responses/404"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405ID"
+					},
+					"415":
+					{
+						"$ref": "#/components/responses/415"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				},
+				"requestBody":
+				{
+					"$ref": "#/components/requestBodies/Inventory"
+				}
+			}
+		},
+		"/item":
+		{
+			"get":
+			{
+				"summary": "Lists all items",
+				"tags":
+				[
+					"Item"
+				],
+				"parameters":
+				[
+					{
+						"$ref": "#/components/parameters/Limit"
+					},
+					{
+						"$ref": "#/components/parameters/Offset"
+					}
+				],
+				"responses":
+				{
+					"200":
+					{
+						"description": "List of item objects",
+						"content":
+						{
+							"application/json":
+							{
+								"schema":
+								{
+									"$ref": "#/components/schemas/ItemList"
+								}
+							}
+						}
+					},
+					"404":
+					{
+						"$ref": "#/components/responses/404"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405NoID"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				}
+			},
+			"post":
+			{
+				"summary": "Add new item",
+				"tags":
+				[
+					"Item"
+				],
+				"responses":
+				{
+					"200":
+					{
+						"$ref": "#/components/responses/200Post"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405NoID"
+					},
+					"415":
+					{
+						"$ref": "#/components/responses/415"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				},
+				"requestBody":
+				{
+					"$ref": "#/components/requestBodies/Item"
+				}
+			}
+		},
+		"/item/{ID}":
+		{
+			"get":
+			{
+				"summary": "Get item by ID",
+				"tags":
+				[
+					"Item"
+				],
+				"parameters":
+				[
+					{
+						"$ref": "#/components/parameters/ID"
+					}
+				],
+				"responses":
+				{
+					"200":
+					{
+						"description": "Item object",
+						"content":
+						{
+							"application/json":
+							{
+								"schema":
+								{
+									"$ref": "#/components/schemas/Item"
+								}
+							}
+						}
+					},
+					"404":
+					{
+						"$ref": "#/components/responses/404"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405ID"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				}
+			},
+			"delete":
+			{
+				"summary": "Delete item by ID",
+				"tags":
+				[
+					"Item"
+				],
+				"parameters":
+				[
+					{
+						"$ref": "#/components/parameters/ID"
+					}
+				],
+				"responses":
+				{
+					"204":
+					{
+						"$ref": "#/components/responses/204"
+					},
+					"404":
+					{
+						"$ref": "#/components/responses/404"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405ID"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				}
+			},
+			"patch":
+			{
+				"summary": "Modify item of ID",
+				"tags":
+				[
+					"Item"
+				],
+				"parameters":
+				[
+					{
+						"$ref": "#/components/parameters/ID"
+					}
+				],
+				"responses":
+				{
+					"204":
+					{
+						"$ref": "#/components/responses/204"
+					},
+					"400":
+					{
+						"$ref": "#/components/responses/400"
+					},
+					"404":
+					{
+						"$ref": "#/components/responses/404"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405ID"
+					},
+					"415":
+					{
+						"$ref": "#/components/responses/415"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				},
+				"requestBody":
+				{
+					"$ref": "#/components/requestBodies/Item"
+				}
+			}
+		},
+		"/player":
+		{
+			"get":
+			{
+				"summary": "Lists all players",
+				"tags":
+				[
+					"Player"
+				],
+				"parameters":
+				[
+					{
+						"$ref": "#/components/parameters/Limit"
+					},
+					{
+						"$ref": "#/components/parameters/Offset"
+					}
+				],
+				"responses":
+				{
+					"200":
+					{
+						"description": "List of player objects",
+						"content":
+						{
+							"application/json":
+							{
+								"schema":
+								{
+									"$ref": "#/components/schemas/PlayerList"
+								}
+							}
+						}
+					},
+					"404":
+					{
+						"$ref": "#/components/responses/404"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405NoID"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				}
+			},
+			"post":
+			{
+				"summary": "Add new player",
+				"tags":
+				[
+					"Player"
+				],
+				"responses":
+				{
+					"200":
+					{
+						"$ref": "#/components/responses/200Post"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405NoID"
+					},
+					"415":
+					{
+						"$ref": "#/components/responses/415"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				},
+				"requestBody":
+				{
+					"$ref": "#/components/requestBodies/Player"
+				}
+			}
+		},
+		"/player/{ID}":
+		{
+			"get":
+			{
+				"summary": "Get player by ID",
+				"tags":
+				[
+					"Player"
+				],
+				"parameters":
+				[
+					{
+						"$ref": "#/components/parameters/ID"
+					}
+				],
+				"responses":
+				{
+					"200":
+					{
+						"description": "Player object",
+						"content":
+						{
+							"application/json":
+							{
+								"schema":
+								{
+									"$ref": "#/components/schemas/Player"
+								}
+							}
+						}
+					},
+					"404":
+					{
+						"$ref": "#/components/responses/404"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405ID"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				}
+			},
+			"delete":
+			{
+				"summary": "Delete player by ID",
+				"tags":
+				[
+					"Player"
+				],
+				"parameters":
+				[
+					{
+						"$ref": "#/components/parameters/ID"
+					}
+				],
+				"responses":
+				{
+					"204":
+					{
+						"$ref": "#/components/responses/204"
+					},
+					"404":
+					{
+						"$ref": "#/components/responses/404"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405ID"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				}
+			},
+			"patch":
+			{
+				"summary": "Modify player of ID",
+				"tags":
+				[
+					"Player"
+				],
+				"parameters":
+				[
+					{
+						"$ref": "#/components/parameters/ID"
+					}
+				],
+				"responses":
+				{
+					"204":
+					{
+						"$ref": "#/components/responses/204"
+					},
+					"400":
+					{
+						"$ref": "#/components/responses/400"
+					},
+					"404":
+					{
+						"$ref": "#/components/responses/404"
+					},
+					"405":
+					{
+						"$ref": "#/components/responses/405ID"
+					},
+					"415":
+					{
+						"$ref": "#/components/responses/415"
+					},
+					"500":
+					{
+						"$ref": "#/components/responses/500"
+					},
+					"503":
+					{
+						"$ref": "#/components/responses/503"
+					}
+				},
+				"requestBody":
+				{
+					"$ref": "#/components/requestBodies/Player"
+				}
+			}
+		}
+	},
+	"components":
+	{
+		"schemas":
+		{
+			"Inventory":
+			{
+				"type": "object",
+				"properties":
+				{
+					"id":
+					{
+						"type": "integer",
+						"readOnly": true
+					},
+					"item":
+					{
+						"type": "integer",
+						"description": "ID number of contained item"
+					},
+					"owner":
+					{
+						"type": "integer",
+						"description": "ID number of inventory owner"
+					},
+					"amount":
+					{
+						"type": "integer"
+					}
+				},
+				"example":
+				{
+					"item": 2,
+					"owner": 1,
+					"amount": 500
+				}
+			},
+			"InventoryList":
+			{
+				"type": "array",
+				"items":
+				{
+					"$ref": "#/components/schemas/Inventory"
+				},
+				"example":
+				[
+					{
+						"id": 0,
+						"item": 2,
+						"owner": 1,
+						"amount": 500
+					},
+					{
+						"id": 1,
+						"item": 5,
+						"owner": 2,
+						"amount": 10
+					}
+				]
+			},
+			"Item":
+			{
+				"type": "object",
+				"properties":
+				{
+					"id":
+					{
+						"type": "integer",
+						"readOnly": true
+					},
+					"name":
+					{
+						"name": "string"
+					}
+				},
+				"example":
+				{
+					"name": "Hammer"
+				}
+			},
+			"ItemList":
+			{
+				"type": "array",
+				"items":
+				{
+					"$ref": "#/components/schemas/Item"
+				},
+				"example":
+				[
+					{
+						"id": 0,
+						"name": "Hammer"
+					},
+					{
+						"id": 1,
+						"name": "Gold"
+					}
+				]
+			},
+			"Player":
+			{
+				"type": "object",
+				"properties":
+				{
+					"id":
+					{
+						"type": "integer",
+						"readOnly": true
+					},
+					"name":
+					{
+						"name": "string"
+					}
+				},
+				"example":
+				{
+					"name": "Bob"
+				}
+			},
+			"PlayerList":
+			{
+				"type": "array",
+				"items":
+				{
+					"$ref": "#/components/schemas/Player"
+				},
+				"example":
+				[
+					{
+						"id": 0,
+						"name": "Bob"
+					},
+					{
+						"id": 1,
+						"name": "Jill"
+					}
+				]
+			},
+			"DeleteList":
+			{
+				"type": "array",
+				"items":
+				{
+					"type": "integer",
+					"description": "ID to delete"
+				}
+			},
+			"PostResponse":
+			{
+				"type": "integer",
+				"description": "Server-generated ID for the inserted POST entry",
+				"example": 1
+			}
+		},
+		"parameters":
+		{
+			"ID":
+			{
+				"name": "ID",
+				"in": "path",
+				"description": "Unique identifier for a database entry",
+				"required": true,
+				"schema":
+				{
+					"type": "string"
+				}
+			},
+			"Limit":
+			{
+				"name": "limit",
+				"description": "Maximum number of results to return; defaults to 500",
+				"in": "query",
+				"schema":
+				{
+					"type": "integer"
+				}
+			},
+			"Offset":
+			{
+				"name": "offset",
+				"description": "Starting index of database results to return; defaults to 0",
+				"in": "query",
+				"schema":
+				{
+					"type": "integer"
+				}
+			}
+		},
+		"requestBodies":
+		{
+			"Inventory":
+			{
+				"description": "Inventory request",
+				"content":
+				{
+					"application/json":
+					{
+						"schema":
+						{
+							"$ref": "#/components/schemas/Inventory"
+						}
+					}
+				},
+				"required": true
+			},
+			"Item":
+			{
+				"description": "Item request",
+				"content":
+				{
+					"application/json":
+					{
+						"schema":
+						{
+							"$ref": "#/components/schemas/Item"
+						}
+					}
+				},
+				"required": true
+			},
+			"Player":
+			{
+				"description": "Player request",
+				"content":
+				{
+					"application/json":
+					{
+						"schema":
+						{
+							"$ref": "#/components/schemas/Player"
+						}
+					}
+				},
+				"required": true
+			}
+		},
+		"headers":
+		{
+			"Allow":
+			{
+				"description": "Allowed HTTP methods",
+				"schema":
+				{
+					"type": "string"
+				}
+			},
+			"Accept":
+			{
+				"description": "Accepted media type",
+				"schema":
+				{
+					"type": "string"
+				}
+			}
+		},
+		"responses":
+		{
+			"200Post":
+			{
+				"description": "POST response containing new ID",
+				"content":
+				{
+					"application/json":
+					{
+						"schema":
+						{
+							"$ref": "#/components/schemas/PostResponse"
+						}
+					}
+				}
+			},
+			"204":
+			{
+				"description": "Entry successfully modified"
+			},
+			"400":
+			{
+				"description": "ID provided in request body does not match path ID"
+			},
+			"404":
+			{
+				"description": "No entries found"
+			},
+			"405NoID":
+			{
+				"description": "Only GET and POST methods allowed",
+				"headers":
+				{
+					"Allow":
+					{
+						"$ref": "#/components/headers/Allow"
+					}
+				}
+			},
+			"405ID":
+			{
+				"description": "Only GET, DELETE and PATCH methods allowed",
+				"headers":
+				{
+					"Allow":
+					{
+						"$ref": "#/components/headers/Allow"
+					}
+				}
+			},
+			"415":
+			{
+				"description": "Request body must be application/json",
+				"headers":
+				{
+					"Accept":
+					{
+						"$ref": "#/components/headers/Accept"
+					}
+				}
+			},
+			"500":
+			{
+				"description": "Database error",
+				"content":
+				{
+					"application/json":
+					{
+						"schema":
+						{
+							"type": "string",
+							"example": "Database error message"
+						}
+					}
+				}
+			},
+			"503":
+			{
+				"description": "Database connection error",
+				"content":
+				{
+					"application/json":
+					{
+						"schema":
+						{
+							"type": "string",
+							"example": "database connection error"
+						}
+					}
+				}
+			}
+		}
+	}
+}

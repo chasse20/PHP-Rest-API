@@ -28,8 +28,8 @@ class ActionGetRange implements IAction
 	* Constructor
 	* @param string $tOffsetVariable Expected name of offset variable in URI query
 	* @param string $tLimitVariable Expected name of limit variable in URI query
-	* @param int|0 $tDefaultOffset Optional default range offset
-	* @param int|500 $tDefaultLimit Optional default range limit 
+	* @param int $tDefaultOffset (optional) Range offset, defaults to 0
+	* @param int $tDefaultLimit (optional) Range limit, defaults to 500
 	*/
 	public function __construct( $tOffsetVariable, $tLimitVariable, $tDefaultOffset = 0, $tDefaultLimit = 500 )
 	{
@@ -49,6 +49,7 @@ class ActionGetRange implements IAction
 		$tempConnection = null;
 		if ( $tAPI->getConnection()->tryConnect( $tAPI, $tempConnection ) )
 		{
+			// Defaults
 			$tempOffset = isset( $_GET[ $this->offsetVariable ] ) && is_numeric( $_GET[ $this->offsetVariable ] ) ? $_GET[ $this->offsetVariable ] : null;
 			if ( $tempOffset == null )
 			{
@@ -61,6 +62,7 @@ class ActionGetRange implements IAction
 				$tempLimit = $this->defaultLimit;
 			}
 			
+			// Query
 			$tempQueryResult = $tempConnection->query( "SELECT * FROM " . $tRoute->table . " LIMIT " . $tempLimit . " OFFSET " . $tempOffset );
 			if ( $tempQueryResult )
 			{
@@ -73,20 +75,21 @@ class ActionGetRange implements IAction
 						$tempList[] = $tempQueryResult->fetch_assoc();
 					}
 					
-					$tAPI->getOutput()->data( $tempList );
+					$tAPI->getOutput()->setData( $tempList );
 				}
 				else if ( $tempListLength == 1 )
 				{
-					$tAPI->getOutput()->data( $tempQueryResult->fetch_assoc() );
+					$tAPI->getOutput()->setData( $tempQueryResult->fetch_assoc() );
 				}
 				else
 				{
-					$tAPI->getOutput()->error( 204, "no records found" );
+					http_response_code( 404 );
 				}
 			}
 			else
 			{
-				$tAPI->getOutput()->error( 500, $tempConnection->error );
+				$tAPI->getOutput()->addError( $tempConnection->error );
+				http_response_code( 500 );
 			}
 			
 			$tempConnection->close();

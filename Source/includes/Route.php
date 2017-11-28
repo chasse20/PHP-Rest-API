@@ -16,7 +16,8 @@ class Route implements IRoute
 	{
 		if ( $tURI == null || empty( $tURI[0] ) )
 		{
-			$tAPI->getOutput()->error( 400, "missing URI... available routes are: 'inventory' or 'item' or 'player'" );
+			echo "No route specified, see <a href='http://www.chassebrook.com/ExampleAPI/help/index.html'>API help</a> for more information";
+			http_response_code( 400 );
 		}
 		else
 		{
@@ -35,7 +36,8 @@ class Route implements IRoute
 					( new RouteID( "players", "id" ) )->execute( $tAPI, $tURI );
 					break;
 				default:
-					$tAPI->getOutput()->error( 400, "route not recognized... available routes are: 'inventory' or 'item' or 'player'" );
+					echo "Invalid route, see <a href='http://www.chassebrook.com/ExampleAPI/help/index.html'>API help</a> for more information";
+					http_response_code( 400 );
 					break;
 			}
 		}

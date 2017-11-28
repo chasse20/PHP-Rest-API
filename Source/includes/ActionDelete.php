@@ -8,77 +8,44 @@ namespace ExampleAPI;
 class ActionDelete implements IAction
 {
 	/**
-	* @var string Optional ID for deleting a single item
+	* @var string ID for deleting a single item
 	*/
 	protected $id;
 	
 	/**
 	* Constructor
-	* @param string|null $tID Optional ID for deleting a single item
+	* @param string $tID ID for deleting a single item
 	*/
-	public function __construct( $tID = null )
+	public function __construct( $tID )
 	{
 		$this->id = $tID;
 	}
 	
 	/**
-	* Executes an SQL query to delete an item using a specific ID or array of item indices passed in as POST data
+	* Executes an SQL query to delete an item using a specific ID
 	* @param IAPI $tAPI API that called this function
 	* @param IRoute $tRoute Route that called this function
 	*/
 	public function execute( IAPI $tAPI, IRoute $tRoute )
-	{		
-		// JSON
-		if ( $this->id == null )
+	{
+		$tempConnection = null;
+		if ( $tAPI->getConnection()->tryConnect( $tAPI, $tempConnection ) )
 		{
-			$tempData = null;
-			if ( $tAPI->getData()->tryGet( $tAPI, $tempData ) )
+			if ( !$tempConnection->query( "DELETE FROM " . $tRoute->table . " WHERE " . $tRoute->IDColumn . "=" . $this->id ) )
 			{
-				$tempConnection = null;
-				if ( $tAPI->getConnection()->tryConnect( $tAPI, $tempConnection ) )
-				{
-					// Multi
-					$tempQuery = null;
-					if ( is_array( $tempData ) )
-					{
-						$tempQuery = "DELETE FROM " . $tRoute->table . " WHERE " . $tRoute->IDColumn . " IN " . Utility::SQLArray( $tempConnection, $tempData );
-					}
-					// Single
-					else
-					{
-						$tempQuery = "DELETE FROM " . $tRoute->table . " WHERE " . $tRoute->IDColumn . "=" . $tempData->{ $tRoute->IDColumn };
-					}
-					
-					if ( !$tempConnection->query( $tempQuery ) )
-					{
-						$tAPI->getOutput()->error( 500, $tempConnection->error );
-					}
-					else if ( $tempConnection->affected_rows == 0 )
-					{
-						$tAPI->getOutput()->error( 204, "no records found" );
-					}
-					
-					$tempConnection->close();
-				}
+				$tAPI->getOutput()->addError( $tempConnection->error );
+				http_response_code( 500 );
 			}
-		}
-		// Single
-		else
-		{
-			$tempConnection = null;
-			if ( $tAPI->getConnection()->tryConnect( $tAPI, $tempConnection ) )
+			else if ( $tempConnection->affected_rows == 0 )
 			{
-				if ( !$tempConnection->query( "DELETE FROM " . $tRoute->table . " WHERE " . $tRoute->IDColumn . "=" . $this->id ) )
-				{
-					$tAPI->getOutput()->error( 500, $tempConnection->error );
-				}
-				else if ( $tempConnection->affected_rows == 0 )
-				{
-					$tAPI->getOutput()->error( 204, "no records found" );
-				}
-				
-				$tempConnection->close();
+				http_response_code( 404 );
 			}
+			else
+			{
+				http_response_code( 204 );
+			}
+			
+			$tempConnection->close();
 		}
 	}
 }

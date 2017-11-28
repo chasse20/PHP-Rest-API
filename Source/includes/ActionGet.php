@@ -43,20 +43,21 @@ class ActionGet implements IAction
 						$tempList[] = $tempQueryResult->fetch_assoc();
 					}
 					
-					$tAPI->getOutput()->data( $tempList );
+					$tAPI->getOutput()->setData( $tempList );
 				}
 				else if ( $tempListLength == 1 )
 				{
-					$tAPI->getOutput()->data( $tempQueryResult->fetch_assoc() );
+					$tAPI->getOutput()->setData( $tempQueryResult->fetch_assoc() );
 				}
 				else
 				{
-					$tAPI->getOutput()->error( 204, "no records found" );
+					http_response_code( 404 );
 				}
 			}
 			else
 			{
-				$tAPI->getOutput()->error( 500, $tempConnection->error );
+				$tAPI->getOutput()->addError( $tempConnection->error );
+				http_response_code( 500 );
 			}
 			
 			$tempConnection->close();

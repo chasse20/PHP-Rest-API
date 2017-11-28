@@ -8,21 +8,21 @@ namespace ExampleAPI;
 class ActionPatch implements IAction
 {
 	/**
-	* @var string Optional ID for updating a single item
+	* @var string ID for updating a single item
 	*/
 	protected $id;
 	
 	/**
 	* Constructor
-	* @param string|null $tID Optional ID for updating a single item
+	* @param string $tID ID for updating a single item
 	*/
-	public function __construct( $tID = null )
+	public function __construct( $tID )
 	{
 		$this->id = $tID;
 	}
 	
 	/**
-	* Executes an SQL query to delete an item using the ID (either specified or from the input), or an array of items
+	* Executes an SQL query to delete an item using the ID
 	* @param IAPI $tAPI API that called this function
 	* @param IRoute $tRoute Route that called this function
 	*/
@@ -31,59 +31,38 @@ class ActionPatch implements IAction
 		$tempData = null;
 		if ( $tAPI->getData()->tryGet( $tAPI, $tempData ) )
 		{
-			$tempConnection = null;
-			if ( $tAPI->getConnection()->tryConnect( $tAPI, $tempConnection ) )
+			$tempIsIDSet = isset( $tempData->{ $tRoute->IDColumn } );
+			if ( $tempIsIDSet && $tempData->{ $tRoute->IDColumn } != $this->id )
 			{
-				// Multi
-				if ( is_array( $tempData ) )
+				$tAPI->getOutput()->addError( "mismatched ID given in data" );
+				http_response_code( 400 );
+			}
+			else
+			{
+				$tempConnection = null;
+				if ( $tAPI->getConnection()->tryConnect( $tAPI, $tempConnection ) )
 				{
-					$tempQueryResult = $tempConnection->multi_query( Utility::SQLUpdateArray( $tempConnection, $tempData, $tRoute->table, $tRoute->IDColumn ) );
-					
-					// First
-					if ( !$tempQueryResult )
+					if ( $tempIsIDSet )
 					{
-						$tAPI->getOutput()->error( 400, "0: " . $tempConnection->error );
-					}
-					
-					// Subsequent
-					if ( $tempConnection->more_results() )
-					{
-						$i = 1;
-						do
-						{
-							if ( !$tempConnection->next_result() )
-							{
-								$tAPI->getOutput()->error( 400, $i . ": " . $tempConnection->error );
-							}
-							
-							++$i;
-						} while ( $tempConnection->more_results() );
-					}
-				}
-				// Single
-				else
-				{
-					if ( isset( $tempData->{ $tRoute->IDColumn } ) ) // prioritizes input data
-					{
-						$this->id = $tempData->{ $tRoute->IDColumn };
 						unset( $tempData->{ $tRoute->IDColumn } );
 					}
 					
-					if ( $this->id == null )
+					if ( !$tempConnection->query( "UPDATE " . $tRoute->table . " " . Utility::SQLSet( $tempConnection, $tempData ) . " WHERE " . $tRoute->IDColumn . "=" . $this->id ) )
 					{
-						$tAPI->getOutput()->error( 500, "missing 'id' input" );
-					}
-					else if ( !$tempConnection->query( "UPDATE " . $tRoute->table . " " . Utility::SQLSet( $tempConnection, $tempData ) . " WHERE " . $tRoute->IDColumn . "=" . $this->id ) )
-					{
-						$tAPI->getOutput()->error( 500, $tempConnection->error );
+						$tAPI->getOutput()->addError( $tempConnection->error );
+						http_response_code( 500 );
 					}
 					else if ( $tempConnection->affected_rows == 0 )
 					{
-						$tAPI->getOutput()->error( 204, "no record found" );
+						http_response_code( 404 );
 					}
+					else
+					{
+						http_response_code( 204 );
+					}
+
+					$tempConnection->close();
 				}
-				
-				$tempConnection->close();
 			}
 		}
 	}

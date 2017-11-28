@@ -12,6 +12,10 @@ class API implements IAPI
 	*/
 	protected $connection;
 	/**
+	* @var IConnection Authorization used for connecting to the database
+	*/
+	protected $authorization;
+	/**
 	* @var IRoute Component for handling the root URI route
 	*/
 	protected $route;
@@ -27,13 +31,15 @@ class API implements IAPI
 	/**
 	* Constructor
 	* @param IConnection $tConnection Component used for connecting to the database
+	* @param IAuthorizaton $tAuthorization Authorization used for connecting to the database
 	* @param IRoute $tRoute Component for handling the root URI route
 	* @param IData $tData Component for handling any input data via POST
 	* @param IOutput $tOutput Component that is responsible for handling response output
 	*/
-	public function __construct( IConnection $tConnection, IRoute $tRoute, IData $tData, IOutput $tOutput )
+	public function __construct( IConnection $tConnection, IAuthorization $tAuthorization, IRoute $tRoute, IData $tData, IOutput $tOutput )
 	{
 		$this->connection = $tConnection;
+		$this->authorization = $tAuthorization;
 		$this->route = $tRoute;
 		$this->data = $tData;
 		$this->output = $tOutput;
@@ -46,6 +52,15 @@ class API implements IAPI
 	public function getConnection()
 	{
 		return $this->connection;
+	}
+	
+	/**
+	* Accessor for getting the encapsulated Authorization component
+	* @return IConnection Authorization component
+	*/
+	public function getAuthorization()
+	{
+		return $this->authorization;
 	}
 	
 	/**

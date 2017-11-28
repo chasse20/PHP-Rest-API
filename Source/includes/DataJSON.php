@@ -15,20 +15,19 @@ class DataJSON implements IData
 	*/
 	public function tryGet( IAPI $tAPI, &$tData )
 	{
-		if ( !isset( $_SERVER[ "CONTENT_TYPE" ] ) || $_SERVER[ "CONTENT_TYPE" ] != "application/json" )
+		if ( isset( $_SERVER[ "CONTENT_TYPE" ] ) && $_SERVER[ "CONTENT_TYPE" ] == "application/json" )
 		{
-			$tAPI->getOutput()->error( 406, "not 'application/json' header type" );
-			return false;
-		}
-	
-		$tData = json_decode( file_get_contents( "php://input" ) );
-		if ( $tData == null )
-		{
-			$tAPI->getOutput()->error( 400, "missing 'data' input" );
-			return false;
+			$tData = json_decode( file_get_contents( "php://input" ) );
+			if ( $tData != null )
+			{
+				return true;
+			}
 		}
 		
-		return true;
+		header( "Accept: application/json" );
+		http_response_code( 415 );
+		
+		return false;
 	}
 }
 

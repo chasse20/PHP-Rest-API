@@ -8,41 +8,88 @@ namespace ExampleAPI;
 class Output implements IOutput
 {
 	/**
-	* @var Error|Error[] Error object or list that gets returned if specified
+	* @var string[] Error messages that get returned in the response if specified
 	*/
-	protected $error;
+	protected $errors;
 	/**
-	* @var stdclass Data object that gets returned if specified
+	* @var mixed Data object that gets returned in the response if specified
 	*/
 	protected $data;
 	
 	/**
-	* Ingests a status code and message and either creates a new error object or adds to a list of errors
-	* @param int $tCode Status code
-	* @param string $tMessage Error message
+	* Constructor
+	* @param string $tServer Server address
+	* @param string[] $tErrors (optional) Error messages that get returned in the response if specified, defaults to null
+	* @param mixed $tData (optional) Data object that gets returned in the response if specified, defaults to null
 	*/
-	public function error( $tCode, $tMessage )
+	public function __construct( $tErrors = null, $tData = null )
 	{
-		if ( $this->error == null )
+		if ( !$this->setData( $tData ) )
 		{
-			$this->error = new Error( $tCode, $tMessage );
+			$this->effectsData( $this->data );
 		}
-		else
+		
+		if ( $tErrors != null )
 		{
-			$tempOld = $this->error;
-			$this->error = [];
-			$this->error[] = $tempOld;
-			$this->error[] = new Error( $tCode, $tMessage );
+			$tempListLength = count( $tErrors );
+			for ( $i = 0; $i < $tempListLength; ++$i )
+			{
+				$this->addError( $tErrors[$i] );
+			}
 		}
+	}
+
+	/**
+	* Adds an error message
+	* @param string|string[] $tError Error message to add
+	* @return bool True if successful
+	*/
+	public function addError( $tError )
+	{
+		if ( $this->errors == null )
+		{
+			$this->errors = [];
+		}
+		
+		$this->errors[] = $tError;
+		$this->effectsMessageAdded( count( $this->errors ) - 1 );
+		
+		return true;
 	}
 	
 	/**
-	* Ingests a data object
-	* @param stdclass $tData Data object
+	* Handles individual error messages
+	* @param int $tIndex Index of added
 	*/
-	public function data( $tData )
+	protected function effectsMessageAdded( $tIndex )
 	{
-		$this->data = $tData;
+	}
+	
+	/**
+	* Setter for response data
+	* @param mixed $tData Response data
+	* @return bool True if successful
+	*/
+	public function setData( $tData )
+	{
+		if ( $this->data != $tData )
+		{
+			$tempOld = $this->data;
+			$this->data = $tData;
+			$this->effectsData( $tempOld );
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	* Handles data
+	* @param mixed $tOld Previous response data
+	*/
+	protected function effectsData( $tOld )
+	{
 	}
 	
 	/**
@@ -51,28 +98,29 @@ class Output implements IOutput
 	public function write()
 	{
 		$tempIsData = $this->data != null;
-		$tempIsError = $this->error != null;
-		if ( $tempIsData || $tempIsError )
+		$tempIsError = $this->errors != null;
+		if ( $tempIsData && $tempIsError ) // combined data and errors
 		{
-			$tempOut = [];
+			$tempOutput = [];
+			$tempOutput[ "data" ] = $this->data; 
+			$tempOutput[ "errors" ] = $this->errors;
 			
-			if ( $tempIsData )
-			{
-				$tempOut[ "data" ] = $this->data;
-			}
-			
-			if ( $tempIsError )
-			{
-				$tempOut[ "error" ] = $this->error;
-			}
-			
-			echo $this->encode( $tempOut );
+			echo $this->encode( $tempOutput );
+		}
+		else if ( $tempIsData )
+		{
+			echo $this->encode( $this->data );
+		}
+		else if ( $tempIsError )
+		{
+			echo $this->encode( count( $this->errors ) == 1 ? $this->errors[0] : $this->errors ); // don't bother with array notation if just one element
 		}
 	}
 	
 	/**
-	* Converts raw PHP objects into JSON
+	* Converts raw PHP objects into an encoded format
 	* @param mixed $tRaw Raw PHP object
+	* @return string Encoded output
 	*/
 	public function encode( $tRaw )
 	{

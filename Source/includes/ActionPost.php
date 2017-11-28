@@ -20,60 +20,14 @@ class ActionPost implements IAction
 			$tempConnection = null;
 			if ( $tAPI->getConnection()->tryConnect( $tAPI, $tempConnection ) )
 			{
-				// Multi
-				if ( is_array( $tempData ) )
+				if ( $tempConnection->query( "INSERT INTO " . $tRoute->table . " " . Utility::SQLKVPs( $tempConnection, $tempData ) ) )
 				{
-					$tempQueryResult = $tempConnection->multi_query( Utility::SQLInsertArray( $tempConnection, $tempData, $tRoute->table ) );
-					
-					// First
-					$tempResults = null;
-					if ( $tempQueryResult )
-					{
-						$tempResults = new \stdclass();
-						$tempResults->{ 0 } = $tempConnection->insert_id;
-					}
-					else
-					{
-						$tAPI->getOutput()->error( 400, "0: " . $tempConnection->error );
-					}
-					
-					// Subsequent
-					if ( $tempConnection->more_results() )
-					{
-						if ( $tempResults == null )
-						{
-							$tempResults = new \stdclass();
-						}
-						
-						$i = 1;
-						do
-						{
-							if ( $tempConnection->next_result() )
-							{
-								$tempResults->{ $i } = $tempConnection->insert_id;
-							}
-							else
-							{
-								$tAPI->getOutput()->error( 400, $i . ": " . $tempConnection->error );
-							}
-							
-							++$i;
-						} while ( $tempConnection->more_results() );
-					}
-					
-					if ( $tempResults != null )
-					{
-						$tAPI->getOutput()->data( $tempResults );
-					}
-				}
-				// Single
-				else if ( $tempConnection->query( "INSERT INTO " . $tRoute->table . " " . Utility::SQLKVPs( $tempConnection, $tempData ) ) )
-				{
-					$tAPI->getOutput()->data( $tempConnection->insert_id );
+					$tAPI->getOutput()->setData( $tempConnection->insert_id );
 				}
 				else
 				{
-					$tAPI->getOutput()->error( 500, $tempConnection->error );
+					$tAPI->getOutput()->addError( $tempConnection->error );
+					http_response_code( 500 );
 				}
 				
 				$tempConnection->close();

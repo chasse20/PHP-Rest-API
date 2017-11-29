@@ -50,7 +50,7 @@ class Connection implements IConnection
 		$tConnection = new \mysqli( $this->server, $this->user, $this->password, $this->database );
 		if ( $tConnection->connect_error )
 		{
-			$tAPI->getOutput()->addError( $tempConnection->connect_error );
+			$tAPI->getOutput()->addError( $tConnection->connect_error );
 			http_response_code( 503 );
 			
 			return false;

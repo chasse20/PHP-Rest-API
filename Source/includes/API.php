@@ -11,18 +11,22 @@ class API implements IAPI
 	* @var IConnection Component used for connecting to the database
 	*/
 	protected $connection;
+	
 	/**
 	* @var IConnection Authorization used for connecting to the database
 	*/
 	protected $authorization;
+	
 	/**
 	* @var IRoute Component for handling the root URI route
 	*/
 	protected $route;
+	
 	/**
 	* @var IData Component for handling any input data via POST
 	*/
 	protected $data;
+	
 	/**
 	* @var IOutput Component that is responsible for handling response output
 	*/

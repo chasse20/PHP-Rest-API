@@ -8,30 +8,44 @@ namespace ExampleAPI;
 class ActionDelete implements IAction
 {
 	/**
-	* @var string ID for deleting a single item
+	* @var string Primary table name to delete from
 	*/
-	protected $id;
+	public $table;
 	
 	/**
-	* Constructor
-	* @param string $tID ID for deleting a single item
+	* @var string Conditions for deleting
 	*/
-	public function __construct( $tID )
+	public $conditions;
+
+	/**
+	* Constructor
+	* @param string $tTable Primary table name to delete from
+	* @param string $tConditions (optional) Conditions for deleting
+	*/
+	public function __construct( $tTable, $tConditions )
 	{
-		$this->id = $tID;
+		$this->table = $tTable;
+		$this->conditions = $tConditions;
 	}
 	
 	/**
 	* Executes an SQL query to delete an item using a specific ID
 	* @param IAPI $tAPI API that called this function
-	* @param IRoute $tRoute Route that called this function
 	*/
-	public function execute( IAPI $tAPI, IRoute $tRoute )
+	public function execute( IAPI $tAPI )
 	{
 		$tempConnection = null;
 		if ( $tAPI->getConnection()->tryConnect( $tAPI, $tempConnection ) )
 		{
-			if ( !$tempConnection->query( "DELETE FROM " . $tRoute->table . " WHERE " . $tRoute->IDColumn . "=" . $this->id ) )
+			// Build query
+			$tempQuery = "DELETE FROM " . $this->table;
+			if ( !empty( $this->conditions ) )
+			{
+				$tempQuery .= " WHERE " . $this->conditions;
+			}
+			
+			// Query
+			if ( !$tempConnection->query( $tempQuery ) )
 			{
 				$tAPI->getOutput()->addError( $tempConnection->error );
 				http_response_code( 500 );

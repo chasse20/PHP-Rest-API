@@ -8,31 +8,52 @@ namespace ExampleAPI;
 class ActionPatch implements IAction
 {
 	/**
-	* @var string ID for updating a single item
+	* @var string Primary table name to patch to
 	*/
-	protected $id;
+	public $table;
+	
+	/**
+	* @var string Name of the table's ID column
+	*/
+	public $IDColumn;
+	
+	/**
+	* @var string ID for patching a single item
+	*/
+	public $id;
+	
+	/**
+	* @var string Conditions for patching
+	*/
+	public $conditions;
 	
 	/**
 	* Constructor
-	* @param string $tID ID for updating a single item
+	* @param string $tTable Primary table name to select from
+	* @param string $tIDColumn Name of the table's ID column
+	* @param string $tID ID for patching a single item
+	* @param string $tConditions Conditions for patching
 	*/
-	public function __construct( $tID )
+	public function __construct( $tTable, $tIDColumn, $tID, $tConditions )
 	{
+		$this->table = $tTable;
+		$this->IDColumn = $tIDColumn;
 		$this->id = $tID;
+		$this->conditions = $tConditions;
 	}
 	
 	/**
 	* Executes an SQL query to delete an item using the ID
 	* @param IAPI $tAPI API that called this function
-	* @param IRoute $tRoute Route that called this function
 	*/
-	public function execute( IAPI $tAPI, IRoute $tRoute )
+	public function execute( IAPI $tAPI )
 	{
 		$tempData = null;
 		if ( $tAPI->getData()->tryGet( $tAPI, $tempData ) )
 		{
-			$tempIsIDSet = isset( $tempData->{ $tRoute->IDColumn } );
-			if ( $tempIsIDSet && $tempData->{ $tRoute->IDColumn } != $this->id )
+			// Check to see if ID of data mismatches ID given in URL
+			$tempIsIDSet = isset( $tempData->{ $this->IDColumn } );
+			if ( $tempIsIDSet && $tempData->{ $this->IDColumn } != $this->id )
 			{
 				$tAPI->getOutput()->addError( "mismatched ID given in data" );
 				http_response_code( 400 );
@@ -42,12 +63,21 @@ class ActionPatch implements IAction
 				$tempConnection = null;
 				if ( $tAPI->getConnection()->tryConnect( $tAPI, $tempConnection ) )
 				{
+					// Remove ID in data if exists
 					if ( $tempIsIDSet )
 					{
-						unset( $tempData->{ $tRoute->IDColumn } );
+						unset( $tempData->{ $this->IDColumn } );
 					}
 					
-					if ( !$tempConnection->query( "UPDATE " . $tRoute->table . " " . Utility::SQLSet( $tempConnection, $tempData ) . " WHERE " . $tRoute->IDColumn . "=" . $this->id ) )
+					// Build query
+					$tempQuery = "UPDATE " . $this->table . " " . Utility::SQLSet( $tempConnection, $tempData );
+					if ( !empty( $this->conditions ) )
+					{
+						$tempQuery .= " WHERE " . $this->conditions;
+					}
+					
+					// Query
+					if ( !$tempConnection->query( $tempQuery ) )
 					{
 						$tAPI->getOutput()->addError( $tempConnection->error );
 						http_response_code( 500 );

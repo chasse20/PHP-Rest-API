@@ -11,21 +11,11 @@ class RouteID implements IRoute
 	* @var string Primary table name to operate on
 	*/
 	public $table;
+	
 	/**
 	* @var string Name of the table's ID column
 	*/
 	public $IDColumn;
-	
-	/**
-	* Constructor
-	* @param string $tTable Primary table name to operate on
-	* @param string $tIDColumn Name of the table's ID column
-	*/
-	public function __construct( $tTable, $tIDColumn )
-	{
-		$this->table = $tTable;
-		$this->IDColumn = $tIDColumn;
-	}
 	
 	/**
 	* Processes RESTful actions using the request method and possible path
@@ -39,13 +29,16 @@ class RouteID implements IRoute
 			switch ( $_SERVER[ "REQUEST_METHOD" ] )
 			{
 				case "GET":
-					( new ActionGetRange( "offset", "limit" ) )->execute( $tAPI, $this );
+					( new ActionGet( $this->table, "*", null, "offset", "limit" ) )->execute( $tAPI );
+					break;
+				case "DELETE":
+					( new ActionDelete( $this->table ) )->execute( $tAPI );
 					break;
 				case "POST":
-					( new ActionPost() )->execute( $tAPI, $this );
+					( new ActionPost( $this->table ) )->execute( $tAPI );
 					break;
 				default:
-					header( "Allow: GET, POST" );
+					header( "Allow: GET, DELETE, POST" );
 					http_response_code( 405 );
 					break;
 			}
@@ -55,13 +48,13 @@ class RouteID implements IRoute
 			switch ( $_SERVER[ "REQUEST_METHOD" ] )
 			{
 				case "GET":
-					( new ActionGet( $tURI[0] ) )->execute( $tAPI, $this );
+					( new ActionGet( $this->table, "*", $this->IDColumn . "=" . $tURI[0] ) )->execute( $tAPI );
 					break;
 				case "DELETE":
-					( new ActionDelete( $tURI[0] ) )->execute( $tAPI, $this );
+					( new ActionDelete( $this->table, $this->IDColumn . "=" . $tURI[0] ) )->execute( $tAPI );
 					break;
 				case "PATCH":
-					( new ActionPatch( $tURI[0] ) )->execute( $tAPI, $this );
+					( new ActionPatch( $this->table, $this->IDColumn, $tURI[0], $this->IDColumn . "=" . $tURI[0] ) )->execute( $tAPI );
 					break;
 				default:
 					header( "Allow: GET, DELETE, PATCH" );

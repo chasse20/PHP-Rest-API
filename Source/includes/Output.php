@@ -11,6 +11,7 @@ class Output implements IOutput
 	* @var string[] Error messages that get returned in the response if specified
 	*/
 	protected $errors;
+	
 	/**
 	* @var mixed Data object that gets returned in the response if specified
 	*/
@@ -124,6 +125,7 @@ class Output implements IOutput
 	*/
 	public function encode( $tRaw )
 	{
+		header( "Content-Type: application/json" );
 		return json_encode( $tRaw );
 	}
 }

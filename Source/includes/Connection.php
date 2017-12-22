@@ -11,14 +11,17 @@ class Connection implements IConnection
 	* @var string Server address
 	*/
 	protected $server;
+	
 	/**
 	* @var string Database user name
 	*/
 	protected $user;
+	
 	/**
 	* @var string Database user password
 	*/
 	protected $password;
+	
 	/**
 	* @var string Database name
 	*/

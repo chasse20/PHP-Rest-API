@@ -12,7 +12,6 @@ require_once( "includes/interfaces/IRoute.php" );
 
 require_once( "includes/ActionDelete.php" );
 require_once( "includes/ActionGet.php" );
-require_once( "includes/ActionGetRange.php" );
 require_once( "includes/ActionPatch.php" );
 require_once( "includes/ActionPost.php" );
 require_once( "includes/API.php" );

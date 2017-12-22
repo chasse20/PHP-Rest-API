@@ -7,7 +7,7 @@ namespace ExampleAPI;
 //##########################
 interface IAction
 {
-	public function execute( IAPI $tAPI, IRoute $tRoute );
+	public function execute( IAPI $tAPI );
 }
 
 ?>

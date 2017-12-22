@@ -18,6 +18,17 @@ class RouteID implements IRoute
 	public $IDColumn;
 	
 	/**
+	* Constructor
+	* @param string $tTable Primary table name to operate on
+	* @param string $tIDColumn Name of the table's ID column
+	*/
+	public function __construct( $tTable, $tIDColumn )
+	{
+		$this->table = $tTable;
+		$this->IDColumn = $tIDColumn;
+	}
+	
+	/**
 	* Processes RESTful actions using the request method and possible path
 	* @param IAPI $tAPI API that called this function
 	* @param string|string[] $tURI URI array of paths

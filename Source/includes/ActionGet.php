@@ -79,7 +79,7 @@ class ActionGet implements IAction
 				$tempQuery .= " WHERE " . $this->conditions;
 			}
 			
-			// Limit and offset			
+			// Limit and offset
 			if ( !empty( $this->limitVariable ) )
 			{
 				$tempLimit = isset( $_GET[ $this->limitVariable ] ) && is_numeric( $_GET[ $this->limitVariable ] ) ? $_GET[ $this->limitVariable ] : null;		

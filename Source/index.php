@@ -19,9 +19,10 @@ require_once( "includes/Authorization.php" );
 require_once( "includes/Connection.php" );
 require_once( "includes/DataJSON.php" );
 require_once( "includes/Output.php" );
-require_once( "includes/Route.php" );
 require_once( "includes/RouteID.php" );
 require_once( "includes/Utility.php" );
+
+require_once( "Route.php" );
 
 // Run API
 $tempAPI = new API( new Connection( "URL", "username", "password", "example_api" ), new Authorization(), new Route(), new DataJSON(), new Output() );

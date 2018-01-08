@@ -16,7 +16,10 @@ class Route implements IRoute
 	{
 		if ( $tURI == null || empty( $tURI[0] ) )
 		{
-			echo "No route specified, see <a href='http://www.chassebrook.com/ExampleAPI/help/index.html'>API help</a> for more information";
+			echo $_SERVER[ "PHP_SELF" ];
+			echo $_SERVER[ "HTTP_HOST" ];
+			echo $_SERVER[ "DOCUMENT_ROOT" ];
+			echo "No route specified, see <a href='http://www.chassebrook.com/ExampleAPI/help/'>API help</a> for more information";
 			http_response_code( 400 );
 		}
 		else
@@ -36,7 +39,7 @@ class Route implements IRoute
 					( new RouteID( "players", "id" ) )->execute( $tAPI, $tURI );
 					break;
 				default:
-					echo "Invalid route, see <a href='http://www.chassebrook.com/ExampleAPI/help/index.html'>API help</a> for more information";
+					echo "Invalid route, see <a href='http://www.chassebrook.com/ExampleAPI/help/'>API help</a> for more information";
 					http_response_code( 400 );
 					break;
 			}

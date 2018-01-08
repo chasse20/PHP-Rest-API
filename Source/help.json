@@ -9,7 +9,7 @@
 	"servers":
 	[
 		{
-			"url": "http://www.chassebrook.com/ExampleAPI/index.php"
+			"url": "http://www.chassebrook.com/ExampleAPI"
 		}
 	],
 	"paths":

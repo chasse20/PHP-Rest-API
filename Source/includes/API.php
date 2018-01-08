@@ -101,13 +101,13 @@ class API implements IAPI
 	{
 		// Generate URI
 		$tempURI = null;
-		if ( isset( $_SERVER[ "PATH_INFO" ] ) )
+		if ( isset( $_SERVER[ "REQUEST_URI" ] ) )
 		{
 			$tempURIString = htmlspecialchars( $_SERVER[ "REQUEST_URI" ] );
 			if ( $tempURIString != "" )
 			{
 				$tempURI = explode( "/", $tempURIString );
-				array_shift( $tempURI, 0, 2 );
+				array_splice( $tempURI, 0, 2 );
 			}
 		}
 		

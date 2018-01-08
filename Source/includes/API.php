@@ -103,11 +103,11 @@ class API implements IAPI
 		$tempURI = null;
 		if ( isset( $_SERVER[ "PATH_INFO" ] ) )
 		{
-			$tempURIString = htmlspecialchars( $_SERVER[ "PATH_INFO" ] );
+			$tempURIString = htmlspecialchars( $_SERVER[ "REQUEST_URI" ] );
 			if ( $tempURIString != "" )
 			{
 				$tempURI = explode( "/", $tempURIString );
-				array_shift( $tempURI ); 
+				array_shift( $tempURI, 0, 2 );
 			}
 		}
 		

@@ -86,18 +86,16 @@ class Output implements IOutput
 			$tempOutput[ "data" ] = $this->data; 
 			$tempOutput[ "errors" ] = $this->errors;
 			
-			return $this->encode( $tempOutput );
+			echo $this->encode( $tempOutput );
 		}
 		else if ( $tempIsData )
 		{
-			return $this->encode( $this->data );
+			echo $this->encode( $this->data );
 		}
 		else if ( $tempIsError )
 		{
-			return $this->encode( count( $this->errors ) == 1 ? $this->errors[0] : $this->errors ); // don't bother with array notation if just one element
+			echo $this->encode( count( $this->errors ) == 1 ? $this->errors[0] : $this->errors ); // don't bother with array notation if just one element
 		}
-		
-		return null;
 	}
 	
 	/**

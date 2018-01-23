@@ -5,7 +5,7 @@ namespace ExampleAPI;
 /**
 * Wrapper for the componentized API
 */
-class API implements IAPI
+abstract class API implements IAPI
 {
 	/**
 	* @var IConnection Component used for connecting to the database
@@ -18,14 +18,9 @@ class API implements IAPI
 	protected $authorization;
 	
 	/**
-	* @var IRoute Component for handling the root URI route
+	* @var IInput Component for handling any input data via POST
 	*/
-	protected $route;
-	
-	/**
-	* @var IData Component for handling any input data via POST
-	*/
-	protected $data;
+	protected $input;
 	
 	/**
 	* @var IOutput Component that is responsible for handling response output
@@ -33,66 +28,84 @@ class API implements IAPI
 	protected $output;
 	
 	/**
-	* Constructor
-	* @param IConnection $tConnection Component used for connecting to the database
-	* @param IAuthorizaton $tAuthorization Authorization used for connecting to the database
-	* @param IRoute $tRoute Component for handling the root URI route
-	* @param IData $tData Component for handling any input data via POST
-	* @param IOutput $tOutput Component that is responsible for handling response output
-	*/
-	public function __construct( IConnection $tConnection, IAuthorization $tAuthorization, IRoute $tRoute, IData $tData, IOutput $tOutput )
-	{
-		$this->connection = $tConnection;
-		$this->authorization = $tAuthorization;
-		$this->route = $tRoute;
-		$this->data = $tData;
-		$this->output = $tOutput;
-	}
-	
-	/**
-	* Accessor for getting the encapsulated Connection component
+	* Accessor for getting the encapsulated Connection component, will lazy instantiate if null
 	* @return IConnection Connection component
 	*/
 	public function getConnection()
 	{
+		if ( $this->connection == null )
+		{
+			$this->connection = $this->createConnection();
+		}
+		
 		return $this->connection;
 	}
 	
 	/**
-	* Accessor for getting the encapsulated Authorization component
-	* @return IConnection Authorization component
+	* Factory method for creating instance of a Connection component
+	* @return IConnection Connection component
+	*/
+	abstract protected function createConnection();
+	
+	/**
+	* Accessor for getting the encapsulated Authorization component, will lazy instantiate if null
+	* @return IAuthorization Authorization component
 	*/
 	public function getAuthorization()
 	{
+		if ( $this->authorization == null )
+		{
+			$this->authorization = $this->createAuthorization();
+		}
+		
 		return $this->authorization;
 	}
 	
 	/**
-	* Accessor for getting the encapsulated Route component
-	* @return IRoute Route component
+	* Factory method for creating instance of an Authorization component
+	* @return IAuthorization Authorization component
 	*/
-	public function getRoute()
+	abstract protected function createAuthorization();
+
+	/**
+	* Accessor for getting the encapsulated Input component, will lazy instantiate if null
+	* @return IInput Input component
+	*/
+	public function getInput()
 	{
-		return $this->route;
+		if ( $this->input == null )
+		{
+			$this->input = $this->createInput();
+		}
+		
+		return $this->input;
 	}
 	
 	/**
-	* Accessor for getting the encapsulated Data component
-	* @return IData Data component
+	* Factory method for creating instance of an Input component
+	* @return IInput Input component
 	*/
-	public function getData()
-	{
-		return $this->data;
-	}
+	abstract protected function createInput();
 	
 	/**
 	* Accessor for getting the encapsulated Output component
-	* @return IRoute Route component
+	* @return IOutput Output component
 	*/
 	public function getOutput()
 	{
+		if ( $this->output == null )
+		{
+			$this->output = $this->createOutput();
+		}
+		
 		return $this->output;
 	}
+	
+	/**
+	* Factory method for creating instance of an Output component
+	* @return IOutput Output component
+	*/
+	abstract protected function createOutput();
 	
 	/**
 	* Runs the API: generates the URI, executes the route, and writes the output
@@ -112,11 +125,20 @@ class API implements IAPI
 		}
 		
 		// Execute Route
-		$this->route->execute( $this, $tempURI );
+		$this->executeRoute( $tempURI );
 		
 		// Output
-		$this->output->write();
+		if ( $this->output != null )
+		{
+			echo $this->output->write();
+		}
 	}
+	
+	/**
+	* Route handler
+	* @param string[] $tURI URI array of paths
+	*/
+	abstract protected function executeRoute( $tURI );
 }
 
 ?>

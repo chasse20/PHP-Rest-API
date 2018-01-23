@@ -5,7 +5,7 @@ namespace ExampleAPI;
 //##########################
 // Interface Declaration
 //##########################
-interface IData
+interface IInput
 {
 	public function tryGet( IAPI $tAPI, &$tData );
 }

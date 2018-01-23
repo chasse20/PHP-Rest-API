@@ -114,14 +114,10 @@ abstract class API implements IAPI
 	{
 		// Generate URI
 		$tempURI = null;
-		if ( isset( $_SERVER[ "REQUEST_URI" ] ) )
+		$tempURIString = htmlspecialchars( substr( $_SERVER[ "PHP_SELF" ], strlen( $_SERVER[ "SCRIPT_NAME" ] ) + 1, strlen( $_SERVER[ "PHP_SELF" ] ) ) );
+		if ( $tempURIString != "" )
 		{
-			$tempURIString = htmlspecialchars( $_SERVER[ "REQUEST_URI" ] );
-			if ( $tempURIString != "" )
-			{
-				$tempURI = explode( "/", $tempURIString );
-				array_splice( $tempURI, 0, 2 );
-			}
+			$tempURI = explode( "/", $tempURIString );
 		}
 		
 		// Execute Route

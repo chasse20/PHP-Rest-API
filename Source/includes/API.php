@@ -126,7 +126,7 @@ abstract class API implements IAPI
 		// Output
 		if ( $this->output != null )
 		{
-			echo $this->output->write();
+			$this->output->write();
 		}
 	}
 	

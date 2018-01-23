@@ -24,7 +24,7 @@ require_once( "includes/OutputJSON.php" );
 require_once( "includes/Utility.php" );
 
 // Run API
-$tempAPI = new ExampleAPI( "http://www.chassebrook.com/ExampleAPI/help/" );
+$tempAPI = new ExampleAPI();
 $tempAPI->execute();
 
 ?>

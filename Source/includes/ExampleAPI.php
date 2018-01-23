@@ -7,16 +7,7 @@ class ExampleAPI extends API
 	/**
 	* @var string URL for help reference
 	*/
-	public $helpLink;
-	
-	/**
-	* Constructor
-	* @param string $tHelpLink URL for help reference
-	*/
-	public function __construct( $tHelpLink )
-	{
-		$this->helpLink = $tHelpLink;
-	}
+	public $helpLink = "http://www.chassebrook.com/ExampleAPI/help/";
 	
 	protected function createConnection()
 	{

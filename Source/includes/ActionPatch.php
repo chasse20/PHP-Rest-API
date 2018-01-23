@@ -49,7 +49,7 @@ class ActionPatch implements IAction
 	public function execute( IAPI $tAPI )
 	{
 		$tempData = null;
-		if ( $tAPI->getData()->tryGet( $tAPI, $tempData ) )
+		if ( $tAPI->getInput()->tryGet( $tAPI, $tempData ) )
 		{
 			// Check to see if ID of data mismatches ID given in URL
 			$tempIsIDSet = isset( $tempData->{ $this->IDColumn } );

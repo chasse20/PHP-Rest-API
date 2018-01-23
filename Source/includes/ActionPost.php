@@ -28,7 +28,7 @@ class ActionPost implements IAction
 	public function execute( IAPI $tAPI )
 	{
 		$tempData = null;
-		if ( $tAPI->getData()->tryGet( $tAPI, $tempData ) )
+		if ( $tAPI->getInput()->tryGet( $tAPI, $tempData ) )
 		{
 			$tempConnection = null;
 			if ( $tAPI->getConnection()->tryConnect( $tAPI, $tempConnection ) )

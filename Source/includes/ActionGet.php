@@ -45,14 +45,14 @@ class ActionGet implements IAction
 	/**
 	* Constructor
 	* @param string $tTable Primary table name to select from
-	* @param string $tSelection Terms of selection
+	* @param string $tSelection (optional) Terms of selection
 	* @param string $tConditions (optional) Conditions for selecting
 	* @param string $tLimitVariable (optional) Name of URI parameter limit variable in URI query
 	* @param string $tOffsetVariable (optional) Name of URI parameter offset variable in URI query
 	* @param int $tDefaultLimit (optional) Default range limit, defaults to 500
 	* @param int $tDefaultOffset (optional) Default range offset, defaults to 0
 	*/
-	public function __construct( $tTable, $tSelection, $tConditions = null, $tLimitVariable = null, $tOffsetVariable = null, $tDefaultLimit = 500, $tDefaultOffset = 0 )
+	public function __construct( $tTable, $tSelection = "*", $tConditions = null, $tLimitVariable = null, $tOffsetVariable = null, $tDefaultLimit = 500, $tDefaultOffset = 0 )
 	{
 		$this->table = $tTable;
 		$this->selection = $tSelection;

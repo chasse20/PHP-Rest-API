@@ -3,14 +3,14 @@
 namespace ExampleAPI;
 
 /**
-* Component responsible for connecting to an SQL database
+* Component responsible for connecting to a database
 */
 class Connection implements IConnection
 {
 	/**
-	* @var string Server address
+	* @var string Database Source Name info
 	*/
-	protected $server;
+	protected $DSN;
 	
 	/**
 	* @var string Database user name
@@ -23,37 +23,33 @@ class Connection implements IConnection
 	protected $password;
 	
 	/**
-	* @var string Database name
-	*/
-	protected $database;
-	
-	/**
 	* Constructor
-	* @param string $tServer Server address
+	* @param string $tDSN Database Source Name info
 	* @param string $tUser Database user name
 	* @param string $tPassword Database user password
-	* @param string $tDatabase Database name
 	*/
-	public function __construct( $tServer, $tUser, $tPassword, $tDatabase )
+	public function __construct( $tDSN, $tUser, $tPassword )
 	{
-		$this->server = $tServer;
+		$this->DSN = $tDSN;
 		$this->user = $tUser;
 		$this->password = $tPassword;
-		$this->database = $tDatabase;
 	}
 	
 	/**
-	* Attempts to establish a connection to the SQL database
+	* Attempts to establish a connection to the database
 	* @param IAPI $tAPI API that called this function
-	* @param IConnection $tConnection Reference to Connection instance that will be created
+	* @param PDO $tConnection Reference to Connection instance that will be created
 	* @return bool True if successful
 	*/
 	public function tryConnect( IAPI $tAPI, &$tConnection )
 	{
-		$tConnection = new \mysqli( $this->server, $this->user, $this->password, $this->database );
-		if ( $tConnection->connect_error )
+		try
 		{
-			$tAPI->getOutput()->addError( $tConnection->connect_error );
+			$tConnection = new \PDO( $this->DSN, $this->user, $this->password );
+		}
+		catch ( PDOException $tException )
+		{
+			$tAPI->getOutput()->addError( $tException->getMessage() );
 			http_response_code( 503 );
 			
 			return false;

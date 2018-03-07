@@ -14,8 +14,7 @@ class InputJSON extends Input
 	
 	protected function decode( $tRaw )
 	{
-		return json_decode( $tRaw );
+		return json_decode( $tRaw, true );
 	}
 }
-
 ?>

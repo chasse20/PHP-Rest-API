@@ -25,7 +25,10 @@ class Output implements IOutput
 	*/
 	public function __construct( $tErrors = null, $tData = null )
 	{
-		$this->setData( $tData );
+		if ( !$this->setData( $tData ) )
+		{
+			$this->effectsData( $this->data );
+		}
 		
 		if ( $tErrors != null )
 		{
@@ -50,10 +53,19 @@ class Output implements IOutput
 		}
 		
 		$this->errors[] = $tError;
+		//$this->effectsMessageAdded( count( $this->errors ) - 1 );
 		
 		return true;
 	}
-
+	
+	/**
+	* Handles individual error messages
+	* @param int $tIndex Index of added
+	*/
+	protected function effectsMessageAdded( $tIndex )
+	{
+	}
+	
 	/**
 	* Setter for response data
 	* @param mixed $tData Response data
@@ -65,6 +77,7 @@ class Output implements IOutput
 		{
 			$tempOld = $this->data;
 			$this->data = $tData;
+			//$this->effectsData( $tempOld );
 			
 			return true;
 		}
@@ -73,8 +86,15 @@ class Output implements IOutput
 	}
 	
 	/**
+	* Handles data
+	* @param mixed $tOld Previous response data
+	*/
+	protected function effectsData( $tOld )
+	{
+	}
+	
+	/**
 	* Writes the HTML document output if error or data objects are specified
-	* @return string Outputs any data or errors
 	*/
 	public function write()
 	{

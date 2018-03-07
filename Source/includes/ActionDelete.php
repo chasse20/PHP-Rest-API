@@ -3,33 +3,32 @@
 namespace ExampleAPI;
 
 /**
-* Handles basic SQL Delete by either ID or input
+* Handles a DELETE query, or a general modification without data input
 */
-class ActionDelete implements IAction
+class ActionDelete extends Action
 {
 	/**
-	* @var string Primary table name to delete from
-	*/
-	public $table;
-	
-	/**
-	* @var string Conditions for deleting
+	* @var string Condition statement
 	*/
 	public $conditions;
-
+	
 	/**
 	* Constructor
-	* @param string $tTable Primary table name to delete from
-	* @param string $tConditions (optional) Conditions for deleting
+	* @param string $tTable Table name to operate on
+	* @param string $tConditions (optional) Condition statement
+	* @param array $tBinds (optional) Associative key-value array for query parameterization
 	*/
-	public function __construct( $tTable, $tConditions )
+	public function __construct( $tTable, $tConditions = null, $tBinds = null )
 	{
-		$this->table = $tTable;
+		// Inheritance
+		parent::__construct( $tTable, $tBinds );
+		
+		// Set variables
 		$this->conditions = $tConditions;
 	}
 	
 	/**
-	* Executes an SQL query to delete an item using a specific ID
+	* Executes an query to delete an item(s)
 	* @param IAPI $tAPI API that called this function
 	*/
 	public function execute( IAPI $tAPI )
@@ -37,20 +36,22 @@ class ActionDelete implements IAction
 		$tempConnection = null;
 		if ( $tAPI->getConnection()->tryConnect( $tAPI, $tempConnection ) )
 		{
-			// Build query
-			$tempQuery = "DELETE FROM " . $this->table;
-			if ( !empty( $this->conditions ) )
+			// Prepare statement
+			$tempQuery = "DELETE FROM " . $tTable;
+			if ( $this->conditions != null )
 			{
-				$tempQuery .= " WHERE " . $this->conditions;
+				$tempQuery .= " " . $this->conditions;
 			}
 			
-			// Query
-			if ( !$tempConnection->query( $tempQuery ) )
+			$tempStatement = $tempConnection->prepare( $tempQuery );
+			
+			// Execute
+			if ( !$tempStatement->execute( $this->binds ) )
 			{
-				$tAPI->getOutput()->addError( $tempConnection->error );
+				$tAPI->getOutput()->addError( $tempStatement->errorInfo() );
 				http_response_code( 500 );
 			}
-			else if ( $tempConnection->affected_rows == 0 )
+			else if ( $tempStatement->rowCount() == 0 )
 			{
 				http_response_code( 404 );
 			}
@@ -58,8 +59,6 @@ class ActionDelete implements IAction
 			{
 				http_response_code( 204 );
 			}
-			
-			$tempConnection->close();
 		}
 	}
 }

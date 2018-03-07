@@ -2,9 +2,6 @@
 
 namespace ExampleAPI;
 
-//##########################
-// Interface Declaration
-//##########################
 interface IAPI
 {
 	public function getConnection();

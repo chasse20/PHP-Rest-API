@@ -31,10 +31,18 @@ class Input implements IInput
 	{
 		if ( isset( $_SERVER[ "CONTENT_TYPE" ] ) && $_SERVER[ "CONTENT_TYPE" ] == $this->contentType )
 		{
-			$tData = $this->decode( file_get_contents( "php://input" ) );
-			if ( $tData != null )
+			$tempData = file_get_contents( "php://input" );
+			if ( $tempData == "" )
 			{
 				return true;
+			}
+			else
+			{
+				$tData = $this->decode( $tempData );
+				if ( $tData != null )
+				{
+					return true;
+				}
 			}
 		}
 		

@@ -113,15 +113,10 @@ abstract class API implements IAPI
 	public function execute()
 	{
 		// Generate URI
-		$tempURI = null;
-		$tempURIString = htmlspecialchars( substr( $_SERVER[ "PHP_SELF" ], strlen( $_SERVER[ "SCRIPT_NAME" ] ) + 1, strlen( $_SERVER[ "PHP_SELF" ] ) ) );
-		if ( $tempURIString != "" )
-		{
-			$tempURI = explode( "/", $tempURIString );
-		}
-		
+		$tempURI = explode( "/", rtrim( $_SERVER[ "REDIRECT_URL" ], "/" ) );
+
 		// Execute Route
-		$this->executeRoute( $tempURI );
+		$this->executeRoute( array_splice( $tempURI , 2 ) );
 		
 		// Output
 		if ( $this->output != null )

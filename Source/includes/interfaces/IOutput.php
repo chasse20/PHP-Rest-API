@@ -2,9 +2,6 @@
 
 namespace ExampleAPI;
 
-//##########################
-// Interface Declaration
-//##########################
 interface IOutput
 {
 	public function addError( $tError );

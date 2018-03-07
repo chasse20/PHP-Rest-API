@@ -8,143 +8,61 @@ namespace ExampleAPI;
 class Utility
 {
 	/**
-	* Generates SQL-formatted array of values
-	* @param mysqli $tConnection SQL Connection used for injection checks
-	* @param array $tArray Array of values to ingest
-	* @return string SQL-formatted string
+	* Generates database LIMIT and OFFSET statement using URL parameters
+	* @param string $tLimitVariable (optional) Expected name of URL parameter for the limit
+	* @param string $tOffsetVariable (optional) Expected name of URL parameter for the offset
+	* @param int $tDefaultLimit (optional) Default limit, set to 500
+	* @return string Formatted query segment
 	*/
-	public static function SQLArray( $tConnection, $tArray )
+	public static function BuildLimitOffset( $tLimitVariable = "limit", $tOffsetVariable = "offset", $tDefaultLimit = 500 )
 	{
-		$i = 0;
-		$tempValues = "(" . $tConnection->escape_string( $tArray[$i] );
-		++$i;
+		$tempQuery = "LIMIT " . ( ( empty( $tLimitVariable ) || !isset( $_GET[ $tLimitVariable ] ) ) ? $tDefaultLimit : (int)$_GET[ $tLimitVariable ] );
 		
-		$tempListLength = count( $tArray );
-		for ( ; $i < $tempListLength; ++$i )
+		if ( !empty( $tOffsetVariable ) && isset( $_GET[ $tOffsetVariable ] ) )
 		{
-			$tempValues .= "," . $tConnection->escape_string( $tArray[$i] );
-		}
-		
-		return $tempValues . ")";
-	}
-	
-	/**
-	* Generates SQL query for multiple inserts
-	* @param mysqli $tConnection SQL Connection used for injection checks
-	* @param stdclass[] $tArray Array of key-value pairs to ingest
-	* @param string $tTable Table name to insert into
-	* @return string SQL multi-query
-	*/
-	public static function SQLInsertArray( $tConnection, $tArray, $tTable )
-	{
-		$tempQuery = "";
-		
-		$tempListLength = count( $tArray );
-		if ( $tempListLength > 1 )
-		{
-			$tempQuery .= "INSERT INTO " . $tTable . " " . Utility::SQLKVPs( $tConnection, $tArray[0] ) . ";";
-
-			for ( $i = 1; $i < $tempListLength; ++$i )
-			{
-				$tempQuery .= " INSERT INTO " . $tTable . " " . Utility::SQLKVPs( $tConnection, $tArray[$i] ) . ";";
-			}
+			$tempQuery .= " OFFSET " . (int)$_GET[ $tOffsetVariable ];
 		}
 		
 		return $tempQuery;
 	}
 	
 	/**
-	* Generates SQL-formatted array of key-value pairs
-	* @param mysqli $tConnection SQL Connection used for injection checks
-	* @param stdclass $tData Key-value container
-	* @return string SQL-formatted string
+	* Generates SELECT integer variables query using URL parameters
+	* @param string[] $tVariables Expected variable name(s) of URL parameter for the variable
 	*/
-	public static function SQLKVPs( $tConnection, $tData )
+	public static function BuildIntegerConditions( $tVariables )
 	{
-		$tempKeys = "";
-		$tempValues = "";
-		$tempIsComma = false;
-		foreach ( $tData as $tempKey => $tempValue )
+		if ( $tVariables != null )
 		{
-			if ( $tempIsComma )
+			$tempConditions = null;
+			$tempVariable = null;
+			$tempValue = null;
+			for ( $i = ( count( $tVariables ) - 1 ); $i >= 0; --$i )
 			{
-				$tempKeys .= ",";
-				$tempValues .= ",";
-			}
-			else
-			{
-				$tempIsComma = true;
-			}
-			
-			$tempKeys .= $tConnection->escape_string( $tempKey );
-			$tempValues .= "\"" . $tConnection->escape_string( $tempValue ) . "\"";
-		}
-		
-		return "(" . $tempKeys . ") VALUES (" . $tempValues . ")";
-	}
-	
-	/**
-	* Generates SQL query for multiple updates
-	* @param mysqli $tConnection SQL Connection used for injection checks
-	* @param stdclass[] $tArray Array of key-value pairs to ingest
-	* @param string $tTable Table name to update into
-	* @param string $tIDColumn ID column name to update into
-	* @return string SQL multi-query
-	*/
-	public static function SQLUpdateArray( $tConnection, $tArray, $tTable, $tIDColumn )
-	{
-		$tempQuery = "";
-		
-		$tempListLength = count( $tArray );
-		if ( $tempListLength > 1 )
-		{
-			if ( isset( $tArray[0]->{ $tIDColumn } ) )
-			{
-				$tempID = $tArray[0]->{ $tIDColumn };
-				unset( $tArray[0]->{ $tIDColumn } );
-				$tempQuery .= "UPDATE " . $tTable . " " . Utility::SQLSet( $tConnection, $tArray[0] ) . " WHERE " . $tIDColumn . "=" . $tempID . ";";
-			}
-
-			for ( $i = 1; $i < $tempListLength; ++$i )
-			{
-				if ( isset( $tArray[$i]->{ $tIDColumn } ) )
+				$tempVariable = $tVariables[$i];
+				if ( isset( $_GET[ $tempVariable ] ) )
 				{
-					$tempID = $tArray[$i]->{ $tIDColumn };
-					unset( $tArray[$i]->{ $tIDColumn } );
-					$tempQuery .= "UPDATE " . $tTable . " " . Utility::SQLSet( $tConnection, $tArray[$i] ) . " WHERE " . $tIDColumn . "=" . $tempID . ";";
+					$tempValue = $_GET[ $tempVariable ];
+					if ( is_numeric( $tempValue ) )
+					{
+						if ( $tempConditions == null )
+						{
+							$tempConditions = "";
+						}
+						else
+						{
+							$tempConditions .= " AND ";
+						}
+
+						$tempConditions .= $tempVariable . "=" . (int)$tempValue;
+					}
 				}
 			}
-		}
-		
-		return $tempQuery;
-	}
-	
-	/**
-	* Generates SQL-formatted array of key-value setters
-	* @param mysqli $tConnection SQL Connection used for injection checks
-	* @param stdclass $tData Key-value container
-	* @return string SQL-formatted string
-	*/
-	public static function SQLSet( $tConnection, $tData )
-	{
-		$tempSet = "";
-		
-		$tempIsComma = false;
-		foreach ( $tData as $tempKey => $tempValue )
-		{
-			if ( $tempIsComma )
-			{
-				$tempSet .= ",";
-			}
-			else
-			{
-				$tempIsComma = true;
-			}
 			
-			$tempSet .= $tConnection->escape_string( $tempKey ) . "='" . $tConnection->escape_string( $tempValue ) . "'";
+			return $tempConditions;
 		}
 		
-		return "SET " . $tempSet;
+		return null;
 	}
 }
 

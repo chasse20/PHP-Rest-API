@@ -7,6 +7,7 @@ namespace ExampleAPI;
 */
 class Authorization implements IAuthorization
 {
+	
 	/**
 	* Validates user authorization
 	* @param IAPI $tAPI API that called this function

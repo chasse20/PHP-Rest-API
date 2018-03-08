@@ -8,6 +8,11 @@ namespace ExampleAPI;
 class ActionUpdate extends Action
 {
 	/**
+	* @var string Associative array of allowed columns
+	*/
+	public $columns;
+	
+	/**
 	* @var string Condition statement
 	*/
 	public $conditions;
@@ -15,15 +20,17 @@ class ActionUpdate extends Action
 	/**
 	* Constructor
 	* @param string $tTable Table name to operate on
+	* @param array $tColumns Associative array of allowed columns
 	* @param string $tConditions (optional) Condition statement
 	* @param array $tBinds (optional) Associative key-value array for query parameterization
 	*/
-	public function __construct( $tTable, $tConditions = null, $tBinds = null )
+	public function __construct( $tTable, $tColumns, $tConditions = null, $tBinds = null )
 	{
 		// Inheritance
 		parent::__construct( $tTable, $tBinds );
 		
 		// Set variables
+		$this->columns = $tColumns;
 		$this->conditions = $tConditions;
 	}
 	
@@ -39,9 +46,6 @@ class ActionUpdate extends Action
 			$tempConnection = null;
 			if ( $tAPI->getConnection()->tryConnect( $tAPI, $tempConnection ) )
 			{
-				// Prepare statement
-				$tempStatement = $tempConnection->prepare( $this->query );				
-				
 				// Combine data to binds
 				$tempIsBinds = $this->binds != null;
 				if ( $tempData != null && $tempIsBinds )
@@ -53,19 +57,62 @@ class ActionUpdate extends Action
 					$tempData = $this->binds;
 				}
 				
-				// Execute
-				if ( !$tempStatement->execute( $tempData ) )
+				// Prepare statement
+				$tempQuery = null;
+				if ( $tempData != null )
 				{
-					$tAPI->getOutput()->addError( $tempStatement->errorInfo() );
-					http_response_code( 500 );
+					$tempIsComma = false;
+					foreach ( $tempData as $tempKey => $tempValue )
+					{
+						if ( $this->columns[ $tempKey ] )
+						{
+							if ( $tempQuery == null )
+							{
+								$tempQuery = " SET ";
+							}
+							
+							if ( $tempIsComma )
+							{
+								$tempQuery .= ",";
+							}
+							else
+							{
+								$tempIsComma = true;
+							}
+
+							$tempQuery .= $tempKey . "=:" . $tempKey;
+						}
+					}
 				}
-				else if ( $tempStatement->rowCount() == 0 )
+				
+				// Attempt to execute
+				if ( $tempQuery == null )
 				{
-					http_response_code( 404 );
+					$tAPI->getOutput()->addError( "No valid input data given" );
+					http_response_code( 400 );
 				}
 				else
 				{
-					http_response_code( 204 );
+					$tempQuery = "UPDATE " . $this->table . $tempQuery;
+					if ( $this->conditions != null )
+					{
+						$tempQuery .= " " . $this->conditions;
+					}
+					
+					$tempStatement = $tempConnection->prepare( $tempQuery );
+					if ( !$tempStatement->execute( $tempData ) )
+					{
+						$tAPI->getOutput()->addError( $tempStatement->errorInfo() );
+						http_response_code( 500 );
+					}
+					else if ( $tempStatement->rowCount() == 0 )
+					{
+						http_response_code( 404 );
+					}
+					else
+					{
+						http_response_code( 204 );
+					}
 				}
 			}
 		}

@@ -37,7 +37,7 @@ class ActionDelete extends Action
 		if ( $tAPI->getConnection()->tryConnect( $tAPI, $tempConnection ) )
 		{
 			// Prepare statement
-			$tempQuery = "DELETE FROM " . $tTable;
+			$tempQuery = "DELETE FROM " . $this->table;
 			if ( $this->conditions != null )
 			{
 				$tempQuery .= " " . $this->conditions;

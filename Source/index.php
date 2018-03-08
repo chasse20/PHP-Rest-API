@@ -26,8 +26,9 @@ require_once( "includes/OutputJSON.php" );
 require_once( "includes/Utility.php" );
 
 // Run API
-header( "Access-Control-Allow-Origin: *" );
+header( "Access-Control-Allow-Origin: *" ); // fix for specific server
 header( "Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept" );
+header( "Access-Control-Allow-Methods: POST, GET, PATCH, DELETE, OPTIONS" );
 
 $tempAPI = new ExampleAPI();
 $tempAPI->execute();

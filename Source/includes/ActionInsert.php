@@ -52,7 +52,7 @@ class ActionInsert extends Action
 				
 				// Prepare statement
 				$tempQuery = null;
-				if ( $tempData == null )
+				if ( $tempData != null )
 				{
 					$tempKeys = null;
 					$tempValues = null;

@@ -113,10 +113,15 @@ abstract class API implements IAPI
 	public function execute()
 	{
 		// Generate URI
-		$tempURI = explode( "/", rtrim( $_SERVER[ "REDIRECT_URL" ], "/" ) );
+		$tempURI = null;
+		if ( isset( $_SERVER[ "REDIRECT_URL" ] ) )
+		{
+			$tempURI = explode( "/", rtrim( $_SERVER[ "REDIRECT_URL" ], "/" ) );
+			$tempURI = array_splice( $tempURI , 2 );
+		}
 
 		// Execute Route
-		$this->executeRoute( array_splice( $tempURI , 2 ) );
+		$this->executeRoute( $tempURI );
 		
 		// Output
 		if ( $this->output != null )

@@ -42,7 +42,7 @@ class ActionSelect extends Action
 	}
 	
 	/**
-	* Executes an SQL query to select an item(s)
+	* Executes a query to select an item(s)
 	* @param IAPI $tAPI API that called this function
 	*/
 	public function execute( IAPI $tAPI )

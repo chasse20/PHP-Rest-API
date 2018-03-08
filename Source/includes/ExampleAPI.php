@@ -98,7 +98,7 @@ class ExampleAPI extends API
 			switch ( $_SERVER[ "REQUEST_METHOD" ] )
 			{
 				case "GET":
-					( new ActionSelect( $tTable, "*", "WHERE id=" . (int)$tURI[1], Utility::BuildLimitOffset() ) )->execute( $this );
+					( new ActionSelect( $tTable, "*", "WHERE id=" . (int)$tURI[1] ) )->execute( $this );
 					break;
 				case "DELETE":
 					( new ActionDelete( $tTable, "WHERE id=" . (int)$tURI[1] ) )->execute( $this );

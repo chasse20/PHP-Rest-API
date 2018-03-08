@@ -3,15 +3,10 @@
 namespace ExampleAPI;
 
 class ExampleAPI extends API
-{
-	/**
-	* @var string URL for help reference
-	*/
-	public $helpLink = "http://www.chassebrook.com/ExampleAPI/help/";
-	
+{	
 	protected function createConnection()
 	{
-		return new Connection( "localhost", "username", "password", "example_api" );
+		return new ConnectionMySQL( "localhost", "example_database", "example_user", "example_password" );
 	}
 	
 	protected function createAuthorization()
@@ -29,12 +24,21 @@ class ExampleAPI extends API
 		return new OutputJSON();
 	}
 	
+	/**
+	* Create link for help website relative to the API
+	* @return string Direct link of the API help
+	*/
+	protected function getHelpLink()
+	{
+		return "http://" . $_SERVER[ "HTTP_HOST" ] . $_SERVER[ "SCRIPT_NAME" ] . "/../help/";
+	}
+	
 	protected function executeRoute( $tURI )
 	{
 		// Invalid route
 		if ( $tURI == null || empty( $tURI[0] ) )
 		{
-			echo "No route specified, see <a href='" . $this->helpLink . "'>API help</a> for more information";
+			echo "No route specified, see <a href='" . $this->getHelpLink() . "'>API help</a> for more information";
 			http_response_code( 400 );
 		}
 		// Valid routes
@@ -43,16 +47,16 @@ class ExampleAPI extends API
 			switch ( $tURI[0] )
 			{
 				case "inventory":
-					$this->executeSubRoute( $tURI, "inventory", "id" );
+					$this->executeSubRoute( $tURI, "inventory", [ "item" => true, "owner" => true, "amount" => true ] );
 					break;
 				case "item":
-					$this->executeSubRoute( $tURI, "items", "id" );
+					$this->executeSubRoute( $tURI, "items", [ "name" => true ] );
 					break;
 				case "player":
-					$this->executeSubRoute( $tURI, "players", "id" );
+					$this->executeSubRoute( $tURI, "players", [ "name" => true ] );
 					break;
 				default:
-					echo "Invalid route, see <a href='" . $this->helpLink . "'>API help</a> for more information";
+					echo "Invalid route, see <a href='" . $this->getHelpLink() . "'>API help</a> for more information";
 					http_response_code( 400 );
 					break;
 			}
@@ -63,20 +67,24 @@ class ExampleAPI extends API
 	* Processes RESTful actions using the request method and possible path
 	* @param string[] $tURI URI array of paths
 	* @param string $tTable Primary table name to operate on
-	* @param string $tIDColumn Name of the table's ID column
+	* @param array $tColumns Associative array of valid column names to modify
 	*/
-	protected function executeSubRoute( $tURI, $tTable, $tIDColumn )
+	protected function executeSubRoute( $tURI, $tTable, $tColumns )
 	{
 		// No /{id}
-		if ( empty( $tURI[1] ) )
+		if ( !isset( $tURI[1] ) )
 		{
 			switch ( $_SERVER[ "REQUEST_METHOD" ] )
 			{
 				case "GET":
-					( new ActionGet( $tTable, "*", null, "offset", "limit" ) )->execute( $this );
+					( new ActionSelect( $tTable, "*", null, Utility::BuildLimitOffset() ) )->execute( $this );
 					break;
 				case "POST":
-					( new ActionPost( $tTable ) )->execute( $this );
+					( new ActionInsert( $tTable, $tColumns ) )->execute( $this );
+					break;
+				case "OPTIONS":
+					header( "Allow: GET, POST, OPTIONS" );
+					http_response_code( 204 );
 					break;
 				default:
 					header( "Allow: GET, POST" );
@@ -84,25 +92,35 @@ class ExampleAPI extends API
 					break;
 			}
 		}
-		// {id} given
-		else
+		// Proper {id}
+		else if ( is_numeric( $tURI[1] ) )
 		{
 			switch ( $_SERVER[ "REQUEST_METHOD" ] )
 			{
 				case "GET":
-					( new ActionGet( $tTable, "*", $tIDColumn . "=" . $tURI[1] ) )->execute( $this );
+					( new ActionSelect( $tTable, "*", "WHERE id=" . (int)$tURI[1], Utility::BuildLimitOffset() ) )->execute( $this );
 					break;
 				case "DELETE":
-					( new ActionDelete( $tTable, $tIDColumn . "=" . $tURI[1] ) )->execute( $this );
+					( new ActionDelete( $tTable, "WHERE id=" . (int)$tURI[1] ) )->execute( $this );
 					break;
 				case "PATCH":
-					( new ActionPatch( $tTable, $tIDColumn, $tURI[1], $tIDColumn . "=" . $tURI[1] ) )->execute( $this );
+					( new ActionUpdate( $tTable, $tColumns, "WHERE id=" . (int)$tURI[1] ) )->execute( $this );
+					break;
+				case "OPTIONS":
+					header( "Allow: GET, DELETE, PATCH, OPTIONS" );
+					http_response_code( 204 );
 					break;
 				default:
-					header( "Allow: GET, DELETE, PATCH" );
+					header( "Allow: GET, DELETE, PATCH, OPTIONS" );
 					http_response_code( 405 );
 					break;
 			}
+		}
+		// Invalid
+		else
+		{
+			http_response_code( 400 );
+			$this->getOutput()->addError( "Must provide id as an integer." );
 		}
 	}
 }
